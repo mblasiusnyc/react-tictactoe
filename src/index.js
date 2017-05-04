@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 // let boardSize = Number(prompt("What should the width/height of the board be?"));
-let boardSize = 5
+let boardSize = 3
 
 function Square(props) {
   return (
@@ -18,14 +18,15 @@ class Board extends React.Component {
   	let board = new Array(size).fill(new Array(size).fill(null))
   	.map((row, rowIndex) => {
   		let squares = row.map((square, squareIndex) => {
-  			let squareNum = rowIndex*size + squareIndex;
-  			let coords = `${squareIndex+1},${Math.abs(rowIndex-size)}`
+  			let xCoord = squareIndex;
+  			let yCoord = Math.abs(rowIndex+1-size);
+  			let coords = `${squareIndex},${Math.abs(rowIndex+1-size)}`
   			return (
   				<Square
-						key={squareNum}
+						key={rowIndex*size + squareIndex}
 						coords={coords}
-						value={this.props.squares[squareNum]}
-						onClick={() => this.props.onClick(squareNum, coords)}
+						value={this.props.squares[yCoord][xCoord]}
+						onClick={() => this.props.onClick(coords)}
 					/>
 				)
   		})
@@ -47,7 +48,7 @@ class Game extends React.Component {
 	  super();
 	  this.state = {
 	    history: [{
-	      squares: Array(Math.pow(boardSize, 2)).fill(null),
+	      squares: Array(boardSize).fill(Array(boardSize).fill(null))
 	    }],
 	    stepNumber: 0,
 	    xIsNext: true
@@ -57,7 +58,7 @@ class Game extends React.Component {
   	const history = this.state.history;
   	const current = history[this.state.stepNumber];
   	const winner = calculateWinner(current.squares);
-  	debugger
+
   	const moves = history.map((step, move) => {
   		const whosTurn = move % 2 ? 'X' : 'O';
       const desc = move ?
@@ -87,8 +88,8 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
           	squares={current.squares}
-      	    onClick={(i, coords) => {
-      	    	this.handleClick(i, coords);
+      	    onClick={(coords) => {
+      	    	this.handleClick(coords);
       	    }}
           />
         </div>
@@ -105,14 +106,23 @@ class Game extends React.Component {
       xIsNext: (step % 2) ? false : true,
     });
   }
-  handleClick(i, coords) {
+  handleClick(coords) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+    const xCoord = coords.split(',')[0]
+    const yCoord = coords.split(',')[1]
+
+    // if (calculateWinner(squares) || squares[yCoord][xCoord]) {
+    //   return;
+    // }
+    debugger
+    // WHY DOES THE ROW NEED TO BE MODIFIED IN THIS WAY?
+    let rowToModify = squares[yCoord].slice();
+    rowToModify[xCoord] = this.state.xIsNext ? 'X' : 'O';
+    squares[yCoord] = rowToModify;
+
     this.setState({
       history: history.concat([{
         squares: squares,
@@ -133,6 +143,11 @@ ReactDOM.render(
 
 function calculateWinner(squares) {
 	// debugger
+	//Figure out winner for individual square
+	// 1. What is the value for this square?
+	// 2. Do any adjacent squares have the same value?
+	// 3. If yes, does the next square in that line have the same value?
+
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
