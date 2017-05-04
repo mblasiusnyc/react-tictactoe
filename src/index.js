@@ -19,7 +19,7 @@ class Board extends React.Component {
   	.map((row, rowIndex) => {
   		let squares = row.map((square, squareIndex) => {
   			let squareNum = rowIndex*size + squareIndex;
-  			let coords = `${squareIndex},${rowIndex}`
+  			let coords = `${squareIndex+1},${Math.abs(rowIndex-size)}`
   			return (
   				<Square
 						key={squareNum}
@@ -36,7 +36,7 @@ class Board extends React.Component {
   render() {
     return (
       <div>
-      	{ this.generateBoard(3) }
+      	{ this.generateBoard(4) }
       </div>
     );
   }
