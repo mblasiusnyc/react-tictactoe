@@ -14,24 +14,29 @@ class Board extends React.Component {
   renderSquare(i) {
     return <Square value={this.props.squares[i]} onClick={() => this.props.onClick(i)} />;
   }
+  generateBoard(size) {
+  	let board = new Array(size).fill(new Array(size).fill(null))
+  	.map((row, rowIndex) => {
+  		let squares = row.map((square, squareIndex) => {
+  			let squareNum = rowIndex*size + squareIndex;
+  			let coords = `${squareIndex},${rowIndex}`
+  			return (
+  				<Square
+						key={squareNum}
+						coords={coords}
+						value={this.props.squares[squareNum]}
+						onClick={() => this.props.onClick(squareNum)}
+					/>
+				)
+  		})
+			return <div key={rowIndex} className="board-row">{ squares }</div>
+  	})
+  	return board;
+  }
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+      	{ this.generateBoard(3) }
       </div>
     );
   }
@@ -57,8 +62,6 @@ class Game extends React.Component {
   		if(history[currentMove-1] === undefined) return;
   		const previousBoard = history[currentMove-1].squares;
   		const currentBoard = history[currentMove].squares;
-  		console.log("previousBoard: ", previousBoard)
-  		console.log("currentBoard: ", currentBoard)
   		for(let i=0; i<9; i++) {
   			if(previousBoard[i] === null && currentBoard[i] !== null) {
   				let xCoord = i%3 + 1;
