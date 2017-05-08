@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-// let boardSize = Number(prompt("What should the width/height of the board be?"));
-let boardSize = 3
+let boardSize = Number(prompt("What should the width/height of the board be?"));
+// let boardSize = 3
 
 function Square(props) {
   return (
@@ -114,10 +114,9 @@ class Game extends React.Component {
     const xCoord = coords.split(',')[0]
     const yCoord = coords.split(',')[1]
 
-    // if (calculateWinner(squares) || squares[yCoord][xCoord]) {
-    //   return;
-    // }
-    debugger
+    if (calculateWinner(squares) || squares[yCoord][xCoord]) {
+      return;
+    }
     // WHY DOES THE ROW NEED TO BE MODIFIED IN THIS WAY?
     let rowToModify = squares[yCoord].slice();
     rowToModify[xCoord] = this.state.xIsNext ? 'X' : 'O';
@@ -141,28 +140,47 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+function isValidCoord(x, y){
+	return !(x >= boardSize || x < 0 || y >= boardSize || y < 0)
+}
+
 function calculateWinner(squares) {
-	// debugger
 	//Figure out winner for individual square
-	// 1. What is the value for this square?
+	// 1. Is the square value not null
 	// 2. Do any adjacent squares have the same value?
 	// 3. If yes, does the next square in that line have the same value?
 
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
+	for(let y=0; y<squares.length; y++) {
+		for(let x=0; x<squares.length; x++) {
+			if(squares[y][x] !== null) {
+				let playerMarker = squares[y][x];
+				for(let xx=-1; xx<=1; xx++) {
+					for(let yy=-1; yy<=1; yy++) {
+						if(!isValidCoord((y+yy),(x+xx)) || (xx === 0 && yy === 0) || (x === xx && y === yy)) {
+						} else {
+							if(squares[y+yy][x+xx] === playerMarker) {
+								if(isValidCoord((y+yy+yy),(x+xx+xx))) {
+									if(squares[y+yy+yy][x+xx+xx] === playerMarker) {
+										return (
+											{
+												x: x,
+												y: y
+											},{
+												x: x+xx,
+												y: y+yy
+											},{
+												x: x+xx+xx,
+												y: y+yy+yy
+											}
+										)
+									}
+								}
+							}
+						};
+					}
+				}
+			}
+		}
+	}
 }
+
