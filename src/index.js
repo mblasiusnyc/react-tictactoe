@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 let boardSize = Number(prompt("What should the width/height of the board be?"));
+let winningSquares;
 // let boardSize = 3
 
 function Square(props) {
   return (
-    <button className="square" onClick={() => props.onClick()}>
+    <button className={"square " + props.isWinningSquare} onClick={() => props.onClick()}>
       {props.value}
     </button>
   );
@@ -25,6 +26,7 @@ class Board extends React.Component {
   				<Square
 						key={rowIndex*size + squareIndex}
 						coords={coords}
+						isWinningSquare={isWinningSquare(xCoord, yCoord) ? 'winning-square' : ''}
 						value={this.props.squares[yCoord][xCoord]}
 						onClick={() => this.props.onClick(coords)}
 					/>
@@ -145,6 +147,16 @@ function isValidCoord(x, y){
 	return !(x >= boardSize || x < 0 || y >= boardSize || y < 0)
 }
 
+function isWinningSquare(x,y) {
+	if(winningSquares) {
+		debugger;
+		for(let i=0; i<3; i++) {
+			if(winningSquares[i].x === x && winningSquares[i].y === y) return true;
+		}
+		return false;
+	}
+}
+
 function calculateWinner(squares) {
 	//Figure out winner for individual square
 	// 1. Is the square value not null
@@ -162,18 +174,17 @@ function calculateWinner(squares) {
 							if(squares[y+yy][x+xx] === playerMarker) {
 								if(isValidCoord((y+yy+yy),(x+xx+xx))) {
 									if(squares[y+yy+yy][x+xx+xx] === playerMarker) {
-										return (
-											{
-												x: x,
-												y: y
-											},{
-												x: x+xx,
-												y: y+yy
-											},{
-												x: x+xx+xx,
-												y: y+yy+yy
-											}
-										)
+										winningSquares = [{
+											x: x,
+											y: y
+										},{
+											x: x+xx,
+											y: y+yy
+										},{
+											x: x+xx+xx,
+											y: y+yy+yy
+										}]
+										return true;
 									}
 								}
 							}
