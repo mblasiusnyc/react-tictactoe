@@ -4,7 +4,6 @@ import './index.css';
 
 let boardSize = Number(prompt("What should the width/height of the board be?"));
 let winningSquares;
-// let boardSize = 3
 
 function Square(props) {
   return (
@@ -149,7 +148,6 @@ function isValidCoord(x, y){
 
 function isWinningSquare(x,y) {
 	if(winningSquares) {
-		debugger;
 		for(let i=0; i<3; i++) {
 			if(winningSquares[i].x === x && winningSquares[i].y === y) return true;
 		}

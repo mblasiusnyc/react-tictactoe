@@ -52,3 +52,7 @@ ol, ul {
 .current-move {
 	color: red;
 }
+
+.winning-square {
+	background: red;
+}
